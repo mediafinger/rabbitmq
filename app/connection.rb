@@ -5,7 +5,7 @@ require "bunny"
 class Connection
   attr_reader :channel, :queue, :connection
 
-  def initialize(queue_name: "hello")
+  def initialize(queue_name: "persistent_queue")
     # create connection
     @connection = Bunny.new # (hostname: "some-rabbit")
     connection.start
@@ -14,7 +14,7 @@ class Connection
     @channel = connection.create_channel
 
     # declare a queue
-    @queue = channel.queue(queue_name)
+    @queue = channel.queue(queue_name, durable: true)
   end
 
   def close
