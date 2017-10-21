@@ -40,6 +40,19 @@ class Worker
   end
 
   def pubsub
+    con.close # not needed here
+
+    fanout = Fanout.new("logs", exclusive: true)
+    fanout.queue.bind(fanout.exchange)
+
+    puts " [*] Waiting for logs. To exit press CTRL+C"
+
+    fanout.queue.subscribe(block: true) do |delivery_info, properties, body|
+      puts " [x] #{body}"
+    end
+  rescue Interrupt => _
+    fanout.channel.close
+    fanout.close
   end
 end
 

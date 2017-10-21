@@ -21,7 +21,15 @@ class Publisher
     con.close
   end
 
-  def pubsub
+  def pubsub(message)
+    con.close # not needed here
+
+    fanout = Fanout.new("logs")
+
+    fanout.exchange.publish(message)
+    puts " [x] Sent #{message}"
+
+    fanout.close
   end
 end
 
@@ -33,4 +41,5 @@ end
 # pub_2.create_task(message)
 
 pub_3 = Publisher.new()
-pub_3.pubsub
+message  = ARGV.empty? ? "Hello World!" : ARGV.join(" ")
+pub_3.pubsub(message)
