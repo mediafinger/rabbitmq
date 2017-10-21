@@ -11,5 +11,6 @@ message = ARGV.empty? ? "Hello World!" : ARGV.join(" ")
 con.queue.publish(message, persistent: true)
 puts " [x] Sent #{message}"
 
+sleep 1.0
 # close the connection
-# con.close
+con.close
