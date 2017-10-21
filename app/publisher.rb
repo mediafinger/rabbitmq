@@ -1,16 +1,36 @@
 require_relative "./connection.rb"
 
-con = Connection.new
+class Publisher
+  attr_reader :con
 
-# publish to default exchange
-# con.channel.default_exchange.publish("Hello World!", routing_key: con.queue.name)
-# puts "[x] Sent 'Hello World!'"
+  def initialize(queue_name, queue_options = {})
+    @con = Connection.new(queue_name: queue_name, queue_options: queue_options)
+  end
 
-message = ARGV.empty? ? "Hello World!" : ARGV.join(" ")
+  def publish_to_default_exchange
+    con.channel.default_exchange.publish("Hello World!", routing_key: con.queue.name)
+    puts "[x] Sent 'Hello World!'"
+    con.close
+  end
 
-con.queue.publish(message, persistent: true)
-puts " [x] Sent #{message}"
+  def create_task(message)
+    con.queue.publish(message, persistent: true)
+    puts " [x] Sent #{message}"
 
-sleep 1.0
-# close the connection
-con.close
+    sleep 1.0
+    con.close
+  end
+
+  def pubsub
+  end
+end
+
+# pub_1 = Publisher.new("hello")
+# pub_1.publish_to_default_exchange
+
+# pub_2 = Publisher.new("persistent_queue", durable: true)
+# message = ARGV.empty? ? "Hello World!" : ARGV.join(" ")
+# pub_2.create_task(message)
+
+pub_3 = Publisher.new()
+pub_3.pubsub
